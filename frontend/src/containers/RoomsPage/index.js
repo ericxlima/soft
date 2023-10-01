@@ -25,7 +25,6 @@ function Rooms() {
       try {
         const response = await api.get('/rooms');
         setRooms(response.data);
-        console.log('Rooms:', response.data)
       } catch (error) {
         console.error("Error fetching rooms:", error);
       }
@@ -52,9 +51,7 @@ function Rooms() {
     event.preventDefault();
     try {
         const userId = profile.id;
-        console.log(userId);
         const response = await api.post('/rooms', { name, capacity, userId });
-        console.log(response.data);
         setName('');  // Reset the form fields
         setCapacity('');
     } catch (err) {

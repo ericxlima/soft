@@ -6,7 +6,7 @@ const checkJWT = require('../middlewares/checkJWT');
 
 /**
  * @swagger
- * /:
+ * /rooms/:
  *   get:
  *     summary: Retrieve a list of all rooms
  *     description: Returns a list of rooms available in the system.
@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /:
+ * /rooms/:
  *   post:
  *     summary: Create a new room
  *     description: Add a new room to the system.

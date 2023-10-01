@@ -5,7 +5,7 @@ const verifyAdmin = require('../middlewares/verifyAdmin');
 
 /**
  * @swagger
- * /:
+ * /bookings/:
  *   get:
  *     summary: Retrieve a list of all bookings
  *     description: Returns a list of all bookings with their associated room.
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /:
+ * /bookings/:
  *   post:
  *     summary: Create a new booking
  *     description: Add a new booking to the system.

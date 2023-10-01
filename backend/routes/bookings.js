@@ -41,17 +41,19 @@ router.get('/', async (req, res) => {
  * 200:
  * description: Uma reserva
  */
-router.post('/reservas', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        const { roomId, startBooking, endBooking } = req.body;
+        const { roomId, userId, startBooking, endBooking } = req.body;
 
-        if (!roomId || !startBooking || !endBooking) {
-            return res.status(400).json({ message: "Campos 'roomId', 'startBooking' e 'endBooking' são obrigatórios." });
+        if (!roomId || !startBooking || !endBooking || !userId) {
+            return res.status(400).json({ message: "Campos 'roomId', 'startBooking', 'endBooking' e 'userId' são obrigatórios." });
         }
+
+        console.log(req.body);
 
         const booking = await Booking.create({
             roomId: roomId,
-            userId: req.userId,  // assumindo que o userId está no request após autenticação
+            userId: userId,
             startBooking: startBooking,
             endBooking: endBooking,
             status: 'REQUESTED'
@@ -59,6 +61,36 @@ router.post('/reservas', async (req, res) => {
 
         res.status(201).json(booking);
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+/**
+ * @swagger
+ * /bookings/{id}:
+ * get:
+ * description: Retorna uma reserva pelo id
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * type: integer
+ * responses:
+ * 200:
+ * description: Uma reserva
+ */
+router.get('/user/:id', async (req, res) => {
+    // Seleciona todas as reservas pelo usuário
+    try {
+        const bookings = await Booking.findAll({
+            where: {
+                userId: req.params.id
+            }
+        });
+        res.json(bookings);
+    } catch (err) {
+        console.log(err, req.params.id)
         res.status(500).json({ error: err.message });
     }
 });

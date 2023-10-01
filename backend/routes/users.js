@@ -7,7 +7,15 @@ const checkJWT = require('../middlewares/checkJWT');
 
 const router = express.Router();
 
-
+/**
+ * @swagger
+ * /users:
+ * get:
+ * description: Cadastro de um usuário
+ * responses:
+ * 200:
+ * description: Um usuário
+ */
 router.post('/register', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -22,7 +30,15 @@ router.post('/register', async (req, res) => {
     }
 });
 
-
+/**
+ * @swagger
+ * /users:
+ * get:
+ * description: Login
+ * responses:
+ * 200:
+ * description: Um usuário
+ */
 router.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ where: { username: req.body.username } });
@@ -37,6 +53,15 @@ router.post('/login', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /users/profile:
+ * get:
+ * description: Retorna o perfil do usuário logado
+ * responses:
+ * 200:
+ * description: Um usuário
+ */
 router.get('/profile', checkJWT, async (req, res) => {
     try {
         const user = await User.findOne({ where: { id: req.user.sub } });

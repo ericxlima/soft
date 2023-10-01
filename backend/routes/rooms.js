@@ -4,6 +4,15 @@ const { Room } = require('../models');
 const verifyAdmin = require('../middlewares/verifyAdmin');
 const checkJWT = require('../middlewares/checkJWT');
 
+/**
+ * @swagger
+ * /rooms:
+ *  get:
+ *  description: Retorna todas as salas
+ * responses:
+ * 200:
+ * description: Uma sala
+ */
 router.get('/', async (req, res) => {
     try {
         const rooms = await Room.findAll();
@@ -13,6 +22,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /rooms/{id}:
+ * get:
+ * description: Retorna uma sala pelo id
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * type: integer
+ * responses:
+ * 200:
+ * description: Uma sala
+ */
 router.post('/', async (req, res) => {
 // router.post('/', verifyAdmin, async (req, res) => {
     try {

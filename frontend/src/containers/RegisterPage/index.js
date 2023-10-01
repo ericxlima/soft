@@ -6,13 +6,13 @@ import { Link } from 'react-router-dom';
 function RegisterPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [is_admin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleRegister = async () => {
     try {
-      const response = await api.post('/auth/register', { username, password, isAdmin });
+      const response = await api.post('/auth/register', { username, password, is_admin });
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || 'Erro desconhecido ao registrar');
@@ -36,7 +36,7 @@ function RegisterPage() {
       />
       <input
         type="checkbox"
-        checked={isAdmin}
+        checked={is_admin}
         onChange={(e) => setIsAdmin(e.target.checked)}
       />
       <label>Sou Administrador</label>

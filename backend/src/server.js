@@ -5,7 +5,11 @@ const usersRoutes = require('../routes/users')
 const roomsRoutes = require('../routes/rooms')
 const bookingsRoutes = require('../routes/bookings')
 
+const cors = require('cors');
+
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

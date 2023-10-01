@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { Room } = require('../models');
 const verifyAdmin = require('../middlewares/verifyAdmin');
+const checkJWT = require('../middlewares/checkJWT');
 
-router.get('/salas', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const rooms = await Room.findAll();
         res.json(rooms);
@@ -12,7 +13,8 @@ router.get('/salas', async (req, res) => {
     }
 });
 
-router.post('/salas', verifyAdmin, async (req, res) => {
+router.post('/', async (req, res) => {
+// router.post('/', verifyAdmin, async (req, res) => {
     try {
         const { name, capacity } = req.body;
 

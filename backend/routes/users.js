@@ -13,7 +13,8 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const user = await User.create({
             username: req.body.username,
-            password: hashedPassword
+            password: hashedPassword,
+            is_adm: req.body.is_admin
         });
         res.status(201).json(user);
     } catch (error) {
@@ -47,7 +48,7 @@ router.get('/profile', checkJWT, async (req, res) => {
         res.send({
             id: user.id,
             username: user.username,
-            isAdmin: user.isAdmin
+            is_adm: user.is_adm
         });
 
     } catch (error) {

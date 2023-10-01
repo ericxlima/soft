@@ -5,17 +5,19 @@ import RoomCard from '../../components/RoomCard';
 function Rooms() {
   const [rooms, setRooms] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [endTime, setEndTime] = useState("");
+
 
   function setAuthToken(token) {
     if (token) {
-        // Aplicando token a cada requisição
         api.defaults.headers.common['Authorization'] = 'Bearer ' + token;
     } else {
-        // Deletando o cabeçalho de autenticação
         delete api.defaults.headers.common['Authorization'];
     }
   }
-
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -43,6 +45,8 @@ function Rooms() {
     fetchProfile();
   }, []);
 
+  // Admin
+
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState('');
   const [submitError, setSubmitError] = useState(null);
@@ -59,18 +63,67 @@ function Rooms() {
     }
   };
 
-  function refreshPage() {
-    window.location.reload(false);
-  }
+  // Common User
+
+  const handleBookRoom = async () => {
+    try {
+      const bookings = await api.get('/bookings');
+  
+      const selectedStart = new Date(`${startDate}T${startTime}:00`);
+      const selectedEnd = new Date(`${endDate}T${endTime}:00`);
+
+      const isAvailable = bookings.every(booking => {
+        const bookingStart = new Date(booking.startBooking);
+        const bookingEnd = new Date(booking.endBooking);
+  
+        return (
+          (selectedStart < bookingStart && selectedEnd <= bookingStart) ||
+          (selectedStart >= bookingEnd && selectedEnd > bookingEnd)
+        );
+      });
+  
+      if (isAvailable) {
+        alert("Horário disponível!");
+      } else {
+        alert("Horário indisponível. Por favor, escolha outro horário.");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Erro ao verificar disponibilidade. Tente novamente mais tarde.");
+    }
+  };
 
   return (
     <div>
-      <h1>Salas</h1>
-      <button onClick={refreshPage}>Atualizar</button>
+      <h1>Reserva de Salas</h1>
       {profile && (
         <div>
           <h3>Nome: {profile.username}</h3>
-          <h3>Cargo: {profile.is_adm ? 'Administrador' : 'Usuário'}</h3>
+          <h3>Cargo: {profile.is_adm ? 'Administrador' : 'Aluno'}</h3>
+          
+          {!profile.is_adm && (
+            <>
+              <h4>Selecione Data e Horário para Reserva de Sala:</h4>
+              <div>
+                <label>Data Inicial:</label>
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+              </div>
+              <div>
+                <label>Hora Inicial:</label>
+                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+              </div>
+              <div>
+                <label>Data Final:</label>
+                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+              </div>
+              <div>
+                <label>Hora Final:</label>
+                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+              </div>
+              <button onClick={() => handleBookRoom()}>Ver Disponibilidade de Horários</button>
+            </>
+          )}
+
           {profile.is_adm && (
             <>
               <h3>Cadastrar uma Nova Sala</h3>
@@ -102,7 +155,7 @@ function Rooms() {
         </div>
       )}
       {rooms.map(room => (
-        <RoomCard key={room.id} room={room} />
+        <RoomCard key={room.id} room={room} userId={profile?.id} />
       ))}
     </div>
   );

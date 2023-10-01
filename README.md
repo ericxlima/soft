@@ -1,15 +1,24 @@
-# SOFT - Sistema de Reserva de Salas
+# SOFT - Sistema Básico de Reserva de Salas
+
+O Sistema Básico de Reserva de Salas foi desenvolvido como parte da avaliação da 2ª fase do Processo Seletivo de Engenharia de Software do CIn - 2023. Este projeto foi selecionado devido à sua complexidade inerente, envolvendo múltiplos relacionamentos, principalmente entre reservas, indivíduos e salas, e o gerenciamento de valores datetime.
+
+A solução foi desenvolvida utilizando o framework Express no back-end e React no front-end. A escolha do Express deve-se à sua eficiência na configuração, considerando o prazo desafiador, enquanto o React foi selecionado devido à sua compatibilidade com uma ampla variedade de bibliotecas de estilização. Inicialmente, o SQLite3 foi escolhido como sistema de gerenciamento de banco de dados devido à sua leveza e facilidade de configuração. No entanto, há planos para migrar para o Postgres no futuro. Para otimizar a configuração do ambiente de desenvolvimento, foram empregados o Docker e o Docker Compose.
+
+O nome "SOFT" surge para representar a eficiência e agilidade na criação desta solução.
 
 ## Como rodar:
 
-- Com Docker
+- Com Docker (Recomendado)
 
 ```
+# instalar e configurar o docker em máquina local 
 docker compose up --build -d
 ```
 
 - Sem Docker (Manualmente)
 ```
+# Com o Node node v18.16.0
+
 # Terminal 1
 cd backend
 npm i
@@ -21,17 +30,11 @@ npm i
 npm start
 ```
 
-_Em ambos o client irá rodar no 0.0.0.0:3000 e o server no 0.0.0.0:8080_
+_Em ambos processos de instalação e inicialização o **client** irá rodar na porta 3000 ([http://0.0.0.0:3000](http://0.0.0.0:3000)) e o **server** irá rodar na porta 8080 ([http://0.0.0.0:8080](http://0.0.0.0:8080))
 
-## User Stories:
+## DB
 
-- O usuário consegue se cadastrar
-- O administrador consegue se cadastrar
-- O usuário e administrador consegue logar
-- As senhas são protegidas por JWT
-- O usuário consegue visualizar as salas
-- O administrador consegue cadastrar novas salas
-
+![aa](diagram.png)
 
 ### Limitações
 
@@ -44,3 +47,15 @@ _Em ambos o client irá rodar no 0.0.0.0:3000 e o server no 0.0.0.0:8080_
     - [ ] Change sqlite to other db
     - [ ] Change SOFT_SECRET_KEY jwt in users.js to env file
     - [ ] Implementar middleware para checar se é de fato um adm que está requisitando (via back invés de limitar apenas no front)
+
+Requisitos:
+
+- [X] O aluno deve ser capaz de criar a requisição;
+- [X] A requisição deve conter: setor, tipo da requisição, data e hora, texto com o conteúdo da requisição;
+- [ ] O setor responsável pelo atendimento deve visualizar as requisições recebidas ;
+- [ ] O setor deve poder fechar a requisição;
+- [X] O aluno pode acompanhar o status da requisição (aberta ou concluída);
+- [X] Pelo menos uma tabela com filtros e paginação;
+- [X] Criar DER ou MER do banco de dados;
+- [ ] Criação de testes automatizados;
+- [X] Deve constar um readme com orientações e comandos necessários para rodar o projeto em ambiente local, bem como a versão utilizada do node para replicação dos testes.

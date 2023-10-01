@@ -3,11 +3,22 @@ const router = express.Router();
 const { Booking, Room } = require('../models');
 const verifyAdmin = require('../middlewares/verifyAdmin');
 
-// Lista todas as solicitações de reserva
-router.get('/reservas', async (req, res) => {
+/**
+ * @swagger
+ * /bookings:
+ *   get:
+ *     description: Retorna todas as reservas
+ *     responses:
+ *       200:
+ *         description: Lista de reservas
+ */
+router.get('/', async (req, res) => {
     try {
         const bookings = await Booking.findAll({
-            include: [Room]
+            include: [{
+                model: Room,
+                as: 'room' // use the alias name here
+            }]
         });
         res.json(bookings);
     } catch (err) {
@@ -15,7 +26,21 @@ router.get('/reservas', async (req, res) => {
     }
 });
 
-// Solicita a reserva de uma sala
+
+/**
+ * @swagger
+ * /bookings/{id}:
+ *  get:
+ *   description: Retorna uma reserva pelo id
+ *  parameters:
+ *  - in: path
+ *   name: id
+ *  required: true
+ * type: integer
+ * responses:
+ * 200:
+ * description: Uma reserva
+ */
 router.post('/reservas', async (req, res) => {
     try {
         const { roomId, startBooking, endBooking } = req.body;
@@ -38,7 +63,20 @@ router.post('/reservas', async (req, res) => {
     }
 });
 
-// Aprova uma solicitação de reserva (apenas para administradores)
+/**
+ * @swagger
+ * /bookings/{id}:
+ * get:
+ * description: Retorna uma reserva pelo id
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * type: integer
+ * responses:
+ * 200:
+ * description: Uma reserva
+ */
 router.post('/reservas/:id/aprovar', verifyAdmin, async (req, res) => {
     try {
         const booking = await Booking.findByPk(req.params.id);
@@ -55,7 +93,20 @@ router.post('/reservas/:id/aprovar', verifyAdmin, async (req, res) => {
     }
 });
 
-// Rejeita uma solicitação de reserva (apenas para administradores)
+/**
+ * @swagger
+ * /bookings/{id}:
+ * get:
+ * description: Retorna uma reserva pelo id
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * type: integer
+ * responses:
+ * 200:
+ * description: Uma reserva
+ */
 router.post('/reservas/:id/rejeitar', verifyAdmin, async (req, res) => {
     try {
         const booking = await Booking.findByPk(req.params.id);

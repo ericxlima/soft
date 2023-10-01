@@ -3,6 +3,8 @@ import api from '../../services/api';
 import RoomCard from '../../components/RoomCard';
 import { useNavigate } from 'react-router-dom';
 
+import { useTable, useFilters, useGlobalFilter } from 'react-table';
+
 
 function Rooms() {
   const [rooms, setRooms] = useState([]);
@@ -11,9 +13,13 @@ function Rooms() {
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [bookingStartDateTime, setBookingStartDateTime] = useState("");
+  const [bookingEndDateTime, setBookingEndDateTime] = useState("");
   const [availabilityMessage, setAvailabilityMessage] = useState("");
-  const navigate = useNavigate();
+  const [availableRooms, setAvailableRooms] = useState([]);
+  const [userBookings, setUserBookings] = useState([]);
 
+  const navigate = useNavigate();
 
   function setAuthToken(token) {
     if (token) {
@@ -22,6 +28,50 @@ function Rooms() {
         delete api.defaults.headers.common['Authorization'];
     }
   }
+
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Nome da Sala',
+        accessor: 'roomName', 
+        Filter: TableInputFilter,
+      },
+      {
+        Header: 'Horário de Início',
+        accessor: 'startBooking',
+      },
+      {
+        Header: 'Horário de Término',
+        accessor: 'endBooking',
+      },
+      {
+        Header: 'Status',
+        accessor: 'status',
+      }
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    state,
+    setGlobalFilter,
+  } = useTable({ columns, data: userBookings }, useFilters, useGlobalFilter);
+
+  function TableInputFilter({ column }) {
+    return (
+      <input
+        value={column.filterValue || ''}
+        onChange={e => column.setFilter(e.target.value || undefined)}
+        placeholder={`Buscar ${column.Header.toLowerCase()}`}
+      />
+    );
+  }
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,13 +90,26 @@ function Rooms() {
       try {
         const response = await api.get('/auth/profile/');
         setProfile(response.data);
+        console.log(response.data);
+        fetchUserBookings(response.data.id);
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
     };
 
+    const fetchUserBookings = async (userId) => {
+      try {
+        const response = await api.get('/bookings/user/' +  userId);
+        console.log(response.data);
+        setUserBookings(response.data);
+      } catch (error) {
+        console.error("Error fetching user bookings:", error.response.data);
+      }
+    };
+
     fetchRooms();
     fetchProfile();
+
   }, []);
 
   // Admin
@@ -74,21 +137,21 @@ function Rooms() {
       const response = await api.get('/bookings');
       const allBookings = response.data;
 
-      const selectedStart = new Date(`${startDate}T${startTime}:00`);
-      const selectedEnd = new Date(`${endDate}T${endTime}:00`);
+      setBookingStartDateTime(Date(`${startDate}T${startTime}:00`));
+      setBookingEndDateTime(Date(`${endDate}T${endTime}:00`));
 
       const conflictingRooms = allBookings.filter(booking => {
         const bookingStart = new Date(booking.startBooking);
         const bookingEnd = new Date(booking.endBooking);
         
         return !(
-          (selectedStart < bookingStart && selectedEnd <= bookingStart) ||
-          (selectedStart >= bookingEnd && selectedEnd > bookingEnd)
+          (bookingStartDateTime < bookingStart && bookingEndDateTime <= bookingStart) ||
+          (bookingStartDateTime >= bookingEnd && bookingEndDateTime > bookingEnd)
         );
       }).map(booking => booking.roomId);
       const allRooms = await api.get('/rooms');
 
-      const availableRooms = allRooms.data.filter(room => !conflictingRooms.includes(room.id));
+      setAvailableRooms(allRooms.data.filter(room => !conflictingRooms.includes(room.id)));
 
       if (availableRooms.length > 0) {
         setAvailabilityMessage(`Salas disponíveis: ${availableRooms.map(room => room.name).join(', ')}`);
@@ -101,7 +164,6 @@ function Rooms() {
       alert("Erro ao verificar disponibilidade. Tente novamente mais tarde.");
     }
   };
-
 
   function backPage() {
     navigate('/');
@@ -171,8 +233,50 @@ function Rooms() {
         </div>
       )}
       {rooms.map(room => (
-        <RoomCard key={room.id} room={room} userId={profile?.id} />
+          <RoomCard 
+              key={room.id} 
+              room={room} 
+              userId={profile?.id} 
+              availableRooms={availableRooms}
+              bookingStartDateTime={bookingStartDateTime}
+              bookingEndDateTime={bookingEndDateTime}
+          />
       ))}
+
+  {profile && !profile.is_adm && userBookings.length > 0 && (
+    <section>
+      <h2>Minhas Reservas</h2>
+
+      <input
+        value={state.globalFilter || ''}
+        onChange={e => setGlobalFilter(e.target.value || undefined)}
+        placeholder={`Buscar`}
+      />
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+        </table>
+    </section>
+  )}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import api from '../../services/api';
 import RoomCard from '../../components/RoomCard';
 import { useNavigate } from 'react-router-dom';
 
-import { useTable, useFilters, useGlobalFilter } from 'react-table';
+import { useTable, useFilters, useGlobalFilter, usePagination } from 'react-table';
 
 
 function Rooms() {
@@ -62,12 +62,30 @@ function Rooms() {
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups,
-    rows,
     prepareRow,
-    state,
+    headerGroups,
     setGlobalFilter,
-  } = useTable({ columns, data: transformedData }, useFilters, useGlobalFilter);
+    state,
+    page,
+    nextPage,
+    previousPage,
+    canNextPage,
+    canPreviousPage,
+    pageOptions,
+    gotoPage,
+    pageCount,
+    setPageSize,
+    state: { pageIndex, pageSize },
+  } = useTable(
+    {
+      columns,
+      data: transformedData,
+      initialState: { pageIndex: 0, pageSize: 2 },
+    },
+    useFilters,
+    useGlobalFilter,
+    usePagination
+  );
 
   function TableInputFilter({ column }) {
     return (
@@ -269,7 +287,7 @@ function Rooms() {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
+          {page.map(row => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
@@ -281,6 +299,50 @@ function Rooms() {
           })}
         </tbody>
         </table>
+        <div>
+          <span>
+            Página{' '}
+            <strong>
+              {pageIndex + 1} de {pageOptions.length}
+            </strong>
+          </span>
+          <span>
+            | Ir para página:
+            <input
+              type="number"
+              defaultValue={pageIndex + 1}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                gotoPage(page);
+              }}
+              style={{ width: '50px' }}
+            />
+          </span>
+          <select
+            value={pageSize}
+            onChange={e => {
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Exibir {pageSize}
+              </option>
+            ))}
+          </select>
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {'<<'}
+          </button>
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {'<'}
+          </button>
+          <button onClick={() => nextPage()} disabled={!canNextPage}>
+            {'>'}
+          </button>
+          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+            {'>>'}
+          </button>
+        </div>
     </section>
   )}
     </div>

@@ -13,8 +13,6 @@ function RoomCard({ room, userId, availableRooms, bookingStartDateTime, bookingE
             startBooking: bookingStartDateTime,
             endBooking: bookingEndDateTime,
         });
-        
-        console.log(response.data);
         alert('Reserva solicitada com sucesso!');
     } catch (error) {
         console.error('Erro ao solicitar reserva:', error.response.data);

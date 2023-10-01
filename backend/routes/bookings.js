@@ -48,9 +48,6 @@ router.post('/', async (req, res) => {
         if (!roomId || !startBooking || !endBooking || !userId) {
             return res.status(400).json({ message: "Campos 'roomId', 'startBooking', 'endBooking' e 'userId' são obrigatórios." });
         }
-
-        console.log(req.body);
-
         const booking = await Booking.create({
             roomId: roomId,
             userId: userId,

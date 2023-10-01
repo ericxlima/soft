@@ -101,11 +101,18 @@ function Rooms() {
       try {
         const response = await api.get('/bookings/user/' +  userId);
         console.log(response.data);
-        setUserBookings(response.data);
+    
+        const bookingsWithRoomName = response.data.map(booking => {
+          const room = rooms.find(r => r.id === booking.roomId);
+          return {...booking, roomName: room ? room.name : 'Sala não encontrada'};
+        });
+    
+        setUserBookings(bookingsWithRoomName);
       } catch (error) {
         console.error("Error fetching user bookings:", error.response.data);
       }
     };
+    
 
     fetchRooms();
     fetchProfile();

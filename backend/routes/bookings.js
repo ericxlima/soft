@@ -139,7 +139,7 @@ router.get('/user/:id', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post('/reservas/:id/aprovar', verifyAdmin, async (req, res) => {
+router.post('/reservas/:id/aprovar', async (req, res) => {
   try {
     const booking = await Booking.findByPk(req.params.id);
 
@@ -174,7 +174,7 @@ router.post('/reservas/:id/aprovar', verifyAdmin, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post('/reservas/:id/rejeitar', verifyAdmin, async (req, res) => {
+router.post('/reservas/:id/rejeitar', async (req, res) => {
   try {
     const booking = await Booking.findByPk(req.params.id);
 

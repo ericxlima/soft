@@ -90,11 +90,12 @@ function RoomsAdmin() {
   );
 
   let allTransformedData = useMemo(() => {
+    console.log(allBookings)
     return allBookings.map(booking => {
       const room = rooms.find(r => r.id === booking.roomId);
       return { ...booking, roomName: room ? room.name : 'Sala não encontrada' };
     });
-  }, [allBookings, rooms]);
+  }, [allBookings]);
 
 
   const {
@@ -155,7 +156,6 @@ function RoomsAdmin() {
         setProfile(response.data);
         if (!response.data.is_adm)
           navigate('/rooms');
-        fetchAllBookings(response.data.id);
       } catch (error) {
         console.error("Error fetching profile:", error);
       }
@@ -164,7 +164,6 @@ function RoomsAdmin() {
     const fetchAllBookings = async () => {
       try {
         const response = await api.get('/bookings');
-        console.log(response.data)
         setAllBookings(response.data);
       } catch (error) {
         console.error("Error fetching all bookings:", error.response.data);
@@ -174,6 +173,7 @@ function RoomsAdmin() {
 
     fetchRooms();
     fetchProfile();
+    fetchAllBookings();
 
   }, []);
 
@@ -199,23 +199,38 @@ function RoomsAdmin() {
     navigate('/');
   }
 
-  const handleStatusChange = (bookingId, newStatus) => {
-    const bookingIndex = allBookings.findIndex(booking => booking.id === bookingId);
-    if (bookingIndex !== -1) {
-      const updatedBookings = [...allBookings];
-      updatedBookings[bookingIndex] = {
-        ...updatedBookings[bookingIndex],
-        status: newStatus
-      };
-      console.log(updatedBookings);
-      setAllBookings(updatedBookings);
+  const handleStatusChange = async (bookingId, newStatus) => {
+    // Faça a requisição apropriada baseada no novo status.
+    try {
+        let response;
+        if (newStatus === "APPROVED") {
+            response = await api.post(`bookings/reservas/${bookingId}/aprovar`);
+        } else if (newStatus === "REJECTED") {
+            response = await api.post(`bookings/reservas/${bookingId}/rejeitar`);
+        } else {
+            return;
+        }
+        const updatedBooking = response.data;
+        setAllBookings(prevBookings => 
+            prevBookings.map(booking => 
+                booking.id === updatedBooking.id ? updatedBooking : booking
+            )
+        );
+
+    } catch (error) {
+        console.error("Erro ao atualizar status da reserva:", error);
     }
-  };
+};
 
 
   const handleApplyClick = (bookingId) => {
     console.log(`Apply changes for Booking ID: ${bookingId}`);
   };
+
+  useEffect(() => {
+    console.log("allBookings changed:", allBookings);
+  }, [allBookings]);
+  
 
   return (
     <Container>

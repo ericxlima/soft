@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import RoomCard from '../../components/RoomCard';
+import { useNavigate } from 'react-router-dom';
+
 
 function Rooms() {
   const [rooms, setRooms] = useState([]);
@@ -9,6 +11,8 @@ function Rooms() {
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [availabilityMessage, setAvailabilityMessage] = useState("");
+  const navigate = useNavigate();
 
 
   function setAuthToken(token) {
@@ -67,35 +71,46 @@ function Rooms() {
 
   const handleBookRoom = async () => {
     try {
-      const bookings = await api.get('/bookings');
-  
+      const response = await api.get('/bookings');
+      const allBookings = response.data;
+
       const selectedStart = new Date(`${startDate}T${startTime}:00`);
       const selectedEnd = new Date(`${endDate}T${endTime}:00`);
 
-      const isAvailable = bookings.every(booking => {
+      const conflictingRooms = allBookings.filter(booking => {
         const bookingStart = new Date(booking.startBooking);
         const bookingEnd = new Date(booking.endBooking);
-  
-        return (
+        
+        return !(
           (selectedStart < bookingStart && selectedEnd <= bookingStart) ||
           (selectedStart >= bookingEnd && selectedEnd > bookingEnd)
         );
-      });
-  
-      if (isAvailable) {
-        alert("Horário disponível!");
+      }).map(booking => booking.roomId);
+      const allRooms = await api.get('/rooms');
+
+      const availableRooms = allRooms.data.filter(room => !conflictingRooms.includes(room.id));
+
+      if (availableRooms.length > 0) {
+        setAvailabilityMessage(`Salas disponíveis: ${availableRooms.map(room => room.name).join(', ')}`);
       } else {
-        alert("Horário indisponível. Por favor, escolha outro horário.");
+        setAvailabilityMessage("Nenhuma sala disponível para o horário selecionado.");
       }
+
     } catch (error) {
       console.log(error);
       alert("Erro ao verificar disponibilidade. Tente novamente mais tarde.");
     }
   };
 
+
+  function backPage() {
+    navigate('/');
+  }
+
   return (
     <div>
       <h1>Reserva de Salas</h1>
+      <button onClick={backPage}>Voltar</button>
       {profile && (
         <div>
           <h3>Nome: {profile.username}</h3>
@@ -121,6 +136,7 @@ function Rooms() {
                 <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
               </div>
               <button onClick={() => handleBookRoom()}>Ver Disponibilidade de Horários</button>
+              <p><b>{availabilityMessage}</b></p>
             </>
           )}
 

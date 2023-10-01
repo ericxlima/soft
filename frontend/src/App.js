@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LoginPage from './containers/LoginPage';
-import RegisterPage from './containers/RegisterPage';
-import Rooms from './containers/RoomsPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import Rooms from './pages/RoomsPage';
 
 function App() {
   return (

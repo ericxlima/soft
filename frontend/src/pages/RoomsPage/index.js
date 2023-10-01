@@ -10,10 +10,8 @@ import {
   StyledButton,
   ProfileInfo,
   SectionTitle,
-  Form,
   LabelInputPair,
   StyledInput,
-  ErrorMessage,
   TableStyles,
   PaginationControls
 } from './styles';
@@ -139,7 +137,6 @@ function Rooms() {
     const fetchUserBookings = async (userId) => {
       try {
         const response = await api.get('/bookings/user/' + userId);
-        console.log(response.data);
         setUserBookings(response.data);
       } catch (error) {
         console.error("Error fetching user bookings:", error.response.data);
@@ -150,24 +147,6 @@ function Rooms() {
     fetchProfile();
 
   }, []);
-
-  // Admin
-
-  const [name, setName] = useState('');
-  const [capacity, setCapacity] = useState('');
-  const [submitError, setSubmitError] = useState(null);
-
-  const handleCreateRoom = async (event) => {
-    event.preventDefault();
-    try {
-      const userId = profile.id;
-      const response = await api.post('/rooms', { name, capacity, userId });
-      setName('');  // Reset the form fields
-      setCapacity('');
-    } catch (err) {
-      setSubmitError(err.response?.data?.message || 'Erro ao criar a sala.');
-    }
-  };
 
   // Common User
 
@@ -239,35 +218,6 @@ function Rooms() {
               </LabelInputPair>
               <StyledButton onClick={handleBookRoom}>Ver Disponibilidade de Horários</StyledButton>
               <p><b>{availabilityMessage}</b></p>
-            </>
-          )}
-
-          {profile.is_adm && (
-            <>
-              <SectionTitle>Cadastrar uma Nova Sala</SectionTitle>
-              <Form onSubmit={handleCreateRoom}>
-                <LabelInputPair>
-                  <label>Nome:</label>
-                  <StyledInput
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Nome da sala"
-                    required
-                  />
-                </LabelInputPair>
-                <LabelInputPair>
-                  <label>Capacidade:</label>
-                  <StyledInput
-                    type="number"
-                    value={capacity}
-                    onChange={(e) => setCapacity(e.target.value)}
-                    placeholder="Capacidade"
-                    required
-                  />
-                </LabelInputPair>
-                <StyledButton type="submit">Criar</StyledButton>
-              </Form>
-              {submitError && <ErrorMessage>{submitError}</ErrorMessage>}
             </>
           )}
         </ProfileInfo>

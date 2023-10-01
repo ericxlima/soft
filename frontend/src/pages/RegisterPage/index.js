@@ -3,12 +3,12 @@ import api from '../../services/api';
 import { useNavigate, Link } from 'react-router-dom';
 
 // Importando os estilos
-import { 
-  Container, 
-  Title, 
-  StyledInput, 
-  StyledButton, 
-  StyledLink, 
+import {
+  Container,
+  Title,
+  StyledInput,
+  StyledButton,
+  StyledLink,
   CheckboxWrapper,
   StyledCheckbox,
   StyledLabel

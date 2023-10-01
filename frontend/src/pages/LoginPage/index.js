@@ -4,12 +4,12 @@ import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
 // Importando os estilos
-import { 
-  Container, 
-  Title, 
-  StyledInput, 
-  StyledButton, 
-  StyledLink 
+import {
+  Container,
+  Title,
+  StyledInput,
+  StyledButton,
+  StyledLink
 } from './styles';
 
 function LoginPage() {

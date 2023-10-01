@@ -12,19 +12,19 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 var swaggerDefinition = {
-    info: {
-        title: 'SOFT',
-        version: '1.0.0',
-        description: 'Sistema de Reserva de Salas'
-    },
-    host: 'localhost:8080',
-    basePath: '/',
-    
+  info: {
+    title: 'SOFT',
+    version: '1.0.0',
+    description: 'Sistema de Reserva de Salas'
+  },
+  host: 'localhost:8080',
+  basePath: '/',
+
 };
 
 var swaggerOptions = {
-    swaggerDefinition,
-    apis: ['../routes/*.js'],
+  swaggerDefinition,
+  apis: ['../routes/*.js'],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -43,10 +43,10 @@ app.use('/api/v1/bookings', bookingsRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get('/', (req, res) => {
-    res.json({ message: "Welcome to the backend!" });
+  res.json({ message: "Welcome to the backend!" });
 });
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
+  console.log(`Server is running on port ${PORT}.`);
 });

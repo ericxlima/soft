@@ -89,9 +89,8 @@ function RoomsAdmin() {
     []
   );
 
-  const allTransformedData = useMemo(() => {
+  let allTransformedData = useMemo(() => {
     return allBookings.map(booking => {
-      console.log(booking)
       const room = rooms.find(r => r.id === booking.roomId);
       return { ...booking, roomName: room ? room.name : 'Sala não encontrada' };
     });
@@ -165,6 +164,7 @@ function RoomsAdmin() {
     const fetchAllBookings = async () => {
       try {
         const response = await api.get('/bookings');
+        console.log(response.data)
         setAllBookings(response.data);
       } catch (error) {
         console.error("Error fetching all bookings:", error.response.data);
@@ -195,57 +195,23 @@ function RoomsAdmin() {
     }
   };
 
-  // Common User
-
-  const handleBookRoom = async () => {
-    try {
-      const response = await api.get('/bookings');
-      const allBookings = response.data;
-
-      setBookingStartDateTime(Date(`${startDate}T${startTime}:00`));
-      setBookingEndDateTime(Date(`${endDate}T${endTime}:00`));
-
-      const conflictingRooms = allBookings.filter(booking => {
-        const bookingStart = new Date(booking.startBooking);
-        const bookingEnd = new Date(booking.endBooking);
-
-        return !(
-          (bookingStartDateTime < bookingStart && bookingEndDateTime <= bookingStart) ||
-          (bookingStartDateTime >= bookingEnd && bookingEndDateTime > bookingEnd)
-        );
-      }).map(booking => booking.roomId);
-      const allRooms = await api.get('/rooms');
-
-      setAvailableRooms(allRooms.data.filter(room => !conflictingRooms.includes(room.id)));
-
-      if (availableRooms.length > 0) {
-        setAvailabilityMessage(`Salas disponíveis: ${availableRooms.map(room => room.name).join(', ')}`);
-      } else {
-        setAvailabilityMessage("Nenhuma sala disponível para o horário selecionado.");
-      }
-
-    } catch (error) {
-      console.log(error);
-      alert("Erro ao verificar disponibilidade. Tente novamente mais tarde.");
-    }
-  };
-
   function backPage() {
     navigate('/');
   }
 
-  const handleStatusChange = async (bookingId, newStatus) => {
-    const newAllBookings = allBookings.map(booking => {
-      if (booking.id === bookingId) {
-        return { ...booking, status: newStatus };
-      }
-      return booking;
-    });
-    
-    console.log(newAllBookings);
-    // setAllBookings(newAllBookings);
+  const handleStatusChange = (bookingId, newStatus) => {
+    const bookingIndex = allBookings.findIndex(booking => booking.id === bookingId);
+    if (bookingIndex !== -1) {
+      const updatedBookings = [...allBookings];
+      updatedBookings[bookingIndex] = {
+        ...updatedBookings[bookingIndex],
+        status: newStatus
+      };
+      console.log(updatedBookings);
+      setAllBookings(updatedBookings);
+    }
   };
-  
+
 
   const handleApplyClick = (bookingId) => {
     console.log(`Apply changes for Booking ID: ${bookingId}`);
@@ -255,12 +221,12 @@ function RoomsAdmin() {
     <Container>
       <h1>Reserva de Salas</h1>
       <StyledButton onClick={backPage}>Voltar</StyledButton>
-      
+
       {profile && (
         <ProfileInfo>
           <h3>Nome: {profile.username}</h3>
           <h3>Cargo: {profile.is_adm ? 'Administrador' : 'Aluno'}</h3>
-          
+
           {profile.is_adm && (
             <>
               <SectionTitle>Cadastrar uma Nova Sala</SectionTitle>
@@ -291,15 +257,15 @@ function RoomsAdmin() {
           )}
         </ProfileInfo>
       )}
-      
+
       {rooms.map(room => (
-        <RoomCard 
-            key={room.id} 
-            room={room} 
-            userId={profile?.id} 
-            availableRooms={availableRooms}
-            bookingStartDateTime={bookingStartDateTime}
-            bookingEndDateTime={bookingEndDateTime}
+        <RoomCard
+          key={room.id}
+          room={room}
+          userId={profile?.id}
+          availableRooms={availableRooms}
+          bookingStartDateTime={bookingStartDateTime}
+          bookingEndDateTime={bookingEndDateTime}
         />
       ))}
 
@@ -339,12 +305,12 @@ function RoomsAdmin() {
 
           <PaginationControls>
             <span>
-              Página 
+              Página
               <strong>
                 {allPageIndex + 1} de {allPageOptions.length}
               </strong>
             </span>
-            
+
             <span>
               Ir para página:
               <input
@@ -357,7 +323,7 @@ function RoomsAdmin() {
                 style={{ width: '50px' }}
               />
             </span>
-            
+
             <select
               value={allPageSize}
               onChange={e => {

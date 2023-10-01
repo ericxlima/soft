@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const usersRoutes = require('../routes/users')
+const roomsRoutes = require('../routes/rooms')
+const bookingsRoutes = require('../routes/bookings')
 
 const app = express();
 
@@ -9,6 +11,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/v1/auth', usersRoutes);
+app.use('/api/v1/rooms', roomsRoutes);
+app.use('/api/v1/bookings', bookingsRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: "Welcome to the backend!" });

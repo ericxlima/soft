@@ -5,6 +5,19 @@ import { useNavigate } from 'react-router-dom';
 
 import { useTable, useFilters, useGlobalFilter, usePagination } from 'react-table';
 
+import {
+  Container,
+  StyledButton,
+  ProfileInfo,
+  SectionTitle,
+  Form,
+  LabelInputPair,
+  StyledInput,
+  ErrorMessage,
+  TableStyles,
+  PaginationControls
+} from './styles';
+
 
 function Rooms() {
   const [rooms, setRooms] = useState([]);
@@ -23,9 +36,9 @@ function Rooms() {
 
   function setAuthToken(token) {
     if (token) {
-        api.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+      api.defaults.headers.common['Authorization'] = 'Bearer ' + token;
     } else {
-        delete api.defaults.headers.common['Authorization'];
+      delete api.defaults.headers.common['Authorization'];
     }
   }
 
@@ -33,7 +46,7 @@ function Rooms() {
     () => [
       {
         Header: 'Nome da Sala',
-        accessor: 'roomName', 
+        accessor: 'roomName',
         Filter: TableInputFilter,
       },
       {
@@ -54,8 +67,8 @@ function Rooms() {
 
   const transformedData = useMemo(() => {
     return userBookings.map(booking => {
-        const room = rooms.find(r => r.id === booking.roomId);
-        return {...booking, roomName: room ? room.name : 'Sala não encontrada'};
+      const room = rooms.find(r => r.id === booking.roomId);
+      return { ...booking, roomName: room ? room.name : 'Sala não encontrada' };
     });
   }, [userBookings, rooms]);
 
@@ -125,7 +138,7 @@ function Rooms() {
 
     const fetchUserBookings = async (userId) => {
       try {
-        const response = await api.get('/bookings/user/' +  userId);
+        const response = await api.get('/bookings/user/' + userId);
         console.log(response.data);
         setUserBookings(response.data);
       } catch (error) {
@@ -147,12 +160,12 @@ function Rooms() {
   const handleCreateRoom = async (event) => {
     event.preventDefault();
     try {
-        const userId = profile.id;
-        const response = await api.post('/rooms', { name, capacity, userId });
-        setName('');  // Reset the form fields
-        setCapacity('');
+      const userId = profile.id;
+      const response = await api.post('/rooms', { name, capacity, userId });
+      setName('');  // Reset the form fields
+      setCapacity('');
     } catch (err) {
-        setSubmitError(err.response?.data?.message || 'Erro ao criar a sala.');
+      setSubmitError(err.response?.data?.message || 'Erro ao criar a sala.');
     }
   };
 
@@ -169,7 +182,7 @@ function Rooms() {
       const conflictingRooms = allBookings.filter(booking => {
         const bookingStart = new Date(booking.startBooking);
         const bookingEnd = new Date(booking.endBooking);
-        
+
         return !(
           (bookingStartDateTime < bookingStart && bookingEndDateTime <= bookingStart) ||
           (bookingStartDateTime >= bookingEnd && bookingEndDateTime > bookingEnd)
@@ -196,158 +209,165 @@ function Rooms() {
   }
 
   return (
-    <div>
+    <Container>
       <h1>Reserva de Salas</h1>
-      <button onClick={backPage}>Voltar</button>
+      <StyledButton onClick={backPage}>Voltar</StyledButton>
+
       {profile && (
-        <div>
+        <ProfileInfo>
           <h3>Nome: {profile.username}</h3>
           <h3>Cargo: {profile.is_adm ? 'Administrador' : 'Aluno'}</h3>
-          
+
           {!profile.is_adm && (
             <>
-              <h4>Selecione Data e Horário para Reserva de Sala:</h4>
-              <div>
+              <SectionTitle>Selecione Data e Horário para Reserva de Sala:</SectionTitle>
+              <LabelInputPair>
                 <label>Data Inicial:</label>
-                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required/>
-              </div>
-              <div>
+                <StyledInput type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required />
+              </LabelInputPair>
+              <LabelInputPair>
                 <label>Hora Inicial:</label>
-                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required/>
-              </div>
-              <div>
+                <StyledInput type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required />
+              </LabelInputPair>
+              <LabelInputPair>
                 <label>Data Final:</label>
-                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required/>
-              </div>
-              <div>
+                <StyledInput type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required />
+              </LabelInputPair>
+              <LabelInputPair>
                 <label>Hora Final:</label>
-                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required/>
-              </div>
-              <button onClick={() => handleBookRoom()}>Ver Disponibilidade de Horários</button>
+                <StyledInput type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required />
+              </LabelInputPair>
+              <StyledButton onClick={handleBookRoom}>Ver Disponibilidade de Horários</StyledButton>
               <p><b>{availabilityMessage}</b></p>
             </>
           )}
 
           {profile.is_adm && (
             <>
-              <h3>Cadastrar uma Nova Sala</h3>
-                <form onSubmit={handleCreateRoom}>
-                  <div>
-                    <label>Nome:</label>
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Nome da sala"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Capacidade:</label>
-                    <input
-                      type="number"
-                      value={capacity}
-                      onChange={(e) => setCapacity(e.target.value)}
-                      placeholder="Capacidade"
-                      required
-                    />
-                  </div>
-                  <button type="submit">Criar</button>
-                </form>
-              {submitError && <p style={{ color: 'red' }}>{submitError}</p>}
+              <SectionTitle>Cadastrar uma Nova Sala</SectionTitle>
+              <Form onSubmit={handleCreateRoom}>
+                <LabelInputPair>
+                  <label>Nome:</label>
+                  <StyledInput
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nome da sala"
+                    required
+                  />
+                </LabelInputPair>
+                <LabelInputPair>
+                  <label>Capacidade:</label>
+                  <StyledInput
+                    type="number"
+                    value={capacity}
+                    onChange={(e) => setCapacity(e.target.value)}
+                    placeholder="Capacidade"
+                    required
+                  />
+                </LabelInputPair>
+                <StyledButton type="submit">Criar</StyledButton>
+              </Form>
+              {submitError && <ErrorMessage>{submitError}</ErrorMessage>}
             </>
           )}
-        </div>
+        </ProfileInfo>
       )}
+
       {rooms.map(room => (
-          <RoomCard 
-              key={room.id} 
-              room={room} 
-              userId={profile?.id} 
-              availableRooms={availableRooms}
-              bookingStartDateTime={bookingStartDateTime}
-              bookingEndDateTime={bookingEndDateTime}
-          />
+        <RoomCard
+          key={room.id}
+          room={room}
+          userId={profile?.id}
+          availableRooms={availableRooms}
+          bookingStartDateTime={bookingStartDateTime}
+          bookingEndDateTime={bookingEndDateTime}
+        />
       ))}
 
-  {profile && !profile.is_adm && userBookings.length > 0 && (
-    <section>
-      <h2>Minhas Reservas</h2>
+      {profile && !profile.is_adm && userBookings.length > 0 && (
+        <TableStyles>
+          <SectionTitle>Minhas Reservas</SectionTitle>
 
-      <input
-        value={state.globalFilter || ''}
-        onChange={e => setGlobalFilter(e.target.value || undefined)}
-        placeholder={`Buscar por Nome da Sala`}
-      />
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+          <StyledInput
+            value={state.globalFilter || ''}
+            onChange={e => setGlobalFilter(e.target.value || undefined)}
+            placeholder="Buscar por Nome da Sala"
+          />
+
+          <table {...getTableProps()}>
+            <thead>
+              {headerGroups.map(headerGroup => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map(column => (
+                    <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map(row => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-        </table>
-        <div>
-          <span>
-            Página{' '}
-            <strong>
-              {pageIndex + 1} de {pageOptions.length}
-            </strong>
-          </span>
-          <span>
-            | Ir para página:
-            <input
-              type="number"
-              defaultValue={pageIndex + 1}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map(row => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map(cell => (
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <PaginationControls>
+            <span>
+              Página
+              <strong>
+                {pageIndex + 1} de {pageOptions.length}
+              </strong>
+            </span>
+
+            <span>
+              Ir para página:
+              <input
+                type="number"
+                defaultValue={pageIndex + 1}
+                onChange={e => {
+                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                  gotoPage(page);
+                }}
+                style={{ width: '50px' }}
+              />
+            </span>
+
+            <select
+              value={pageSize}
               onChange={e => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                gotoPage(page);
+                setPageSize(Number(e.target.value));
               }}
-              style={{ width: '50px' }}
-            />
-          </span>
-          <select
-            value={pageSize}
-            onChange={e => {
-              setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Exibir {pageSize}
-              </option>
-            ))}
-          </select>
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-            {'<<'}
-          </button>
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            {'<'}
-          </button>
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
-            {'>'}
-          </button>
-          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-            {'>>'}
-          </button>
-        </div>
-    </section>
-  )}
-    </div>
+            >
+              {[10, 20, 30, 40, 50].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  Exibir {pageSize}
+                </option>
+              ))}
+            </select>
+
+            <StyledButton onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+              {'<<'}
+            </StyledButton>
+            <StyledButton onClick={() => previousPage()} disabled={!canPreviousPage}>
+              {'<'}
+            </StyledButton>
+            <StyledButton onClick={() => nextPage()} disabled={!canNextPage}>
+              {'>'}
+            </StyledButton>
+            <StyledButton onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+              {'>>'}
+            </StyledButton>
+          </PaginationControls>
+        </TableStyles>
+      )}
+    </Container>
   );
 }
 

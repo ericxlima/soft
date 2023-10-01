@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../services/api';
 import RoomCard from '../../components/RoomCard';
 import { useNavigate } from 'react-router-dom';
@@ -52,6 +52,13 @@ function Rooms() {
     []
   );
 
+  const transformedData = useMemo(() => {
+    return userBookings.map(booking => {
+        const room = rooms.find(r => r.id === booking.roomId);
+        return {...booking, roomName: room ? room.name : 'Sala não encontrada'};
+    });
+  }, [userBookings, rooms]);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -60,7 +67,7 @@ function Rooms() {
     prepareRow,
     state,
     setGlobalFilter,
-  } = useTable({ columns, data: userBookings }, useFilters, useGlobalFilter);
+  } = useTable({ columns, data: transformedData }, useFilters, useGlobalFilter);
 
   function TableInputFilter({ column }) {
     return (
@@ -90,7 +97,6 @@ function Rooms() {
       try {
         const response = await api.get('/auth/profile/');
         setProfile(response.data);
-        console.log(response.data);
         fetchUserBookings(response.data.id);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -101,18 +107,11 @@ function Rooms() {
       try {
         const response = await api.get('/bookings/user/' +  userId);
         console.log(response.data);
-    
-        const bookingsWithRoomName = response.data.map(booking => {
-          const room = rooms.find(r => r.id === booking.roomId);
-          return {...booking, roomName: room ? room.name : 'Sala não encontrada'};
-        });
-    
-        setUserBookings(bookingsWithRoomName);
+        setUserBookings(response.data);
       } catch (error) {
         console.error("Error fetching user bookings:", error.response.data);
       }
     };
-    
 
     fetchRooms();
     fetchProfile();
@@ -190,19 +189,19 @@ function Rooms() {
               <h4>Selecione Data e Horário para Reserva de Sala:</h4>
               <div>
                 <label>Data Inicial:</label>
-                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required/>
               </div>
               <div>
                 <label>Hora Inicial:</label>
-                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required/>
               </div>
               <div>
                 <label>Data Final:</label>
-                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required/>
               </div>
               <div>
                 <label>Hora Final:</label>
-                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required/>
               </div>
               <button onClick={() => handleBookRoom()}>Ver Disponibilidade de Horários</button>
               <p><b>{availabilityMessage}</b></p>
@@ -257,7 +256,7 @@ function Rooms() {
       <input
         value={state.globalFilter || ''}
         onChange={e => setGlobalFilter(e.target.value || undefined)}
-        placeholder={`Buscar`}
+        placeholder={`Buscar por Nome da Sala`}
       />
       <table {...getTableProps()}>
         <thead>

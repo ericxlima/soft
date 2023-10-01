@@ -1,0 +1,19 @@
+{
+    "User": {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "integer"
+            },
+            "username": {
+                "type": "string"
+            },
+            "password": {
+                "type": "string"
+            },
+            "is_admin": {
+                "type": "boolean"
+            }
+        }
+    }
+}

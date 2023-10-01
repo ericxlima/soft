@@ -6,12 +6,28 @@ const checkJWT = require('../middlewares/checkJWT');
 
 /**
  * @swagger
- * /rooms:
- *  get:
- *  description: Retorna todas as salas
- * responses:
- * 200:
- * description: Uma sala
+ * /:
+ *   get:
+ *     summary: Retrieve a list of all rooms
+ *     description: Returns a list of rooms available in the system.
+ *     responses:
+ *       200:
+ *         description: List of rooms
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               name:
+ *                 type: string
+ *               capacity:
+ *                 type: integer
+ *               status:
+ *                 type: string
+ *       500:
+ *         description: Internal server error
  */
 router.get('/', async (req, res) => {
   try {
@@ -24,17 +40,31 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /rooms/{id}:
- * get:
- * description: Retorna uma sala pelo id
- * parameters:
- * - in: path
- * name: id
- * required: true
- * type: integer
- * responses:
- * 200:
- * description: Uma sala
+ * /:
+ *   post:
+ *     summary: Create a new room
+ *     description: Add a new room to the system.
+ *     parameters:
+ *       - in: body
+ *         name: room
+ *         description: Room details
+ *         schema:
+ *           type: object
+ *           required:
+ *             - name
+ *             - capacity
+ *           properties:
+ *             name:
+ *               type: string
+ *             capacity:
+ *               type: integer
+ *     responses:
+ *       201:
+ *         description: Room created successfully
+ *       400:
+ *         description: Bad request (missing required fields)
+ *       500:
+ *         description: Error creating room
  */
 router.post('/', async (req, res) => {
   // router.post('/', verifyAdmin, async (req, res) => {

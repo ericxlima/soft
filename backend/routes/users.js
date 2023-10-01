@@ -9,12 +9,33 @@ const router = express.Router();
 
 /**
  * @swagger
- * /users:
- * get:
- * description: Cadastro de um usuário
- * responses:
- * 200:
- * description: Um usuário
+ * /register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Register a new user to the system.
+ *     parameters:
+ *       - in: body
+ *         name: user
+ *         description: User details
+ *         schema:
+ *           type: object
+ *           required:
+ *             - username
+ *             - password
+ *             - is_admin
+ *           properties:
+ *             username:
+ *               type: string
+ *             password:
+ *               type: string
+ *               format: password
+ *             is_admin:
+ *               type: boolean
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       500:
+ *         description: Internal server error
  */
 router.post('/register', async (req, res) => {
   try {
@@ -32,12 +53,32 @@ router.post('/register', async (req, res) => {
 
 /**
  * @swagger
- * /users:
- * get:
- * description: Login
- * responses:
- * 200:
- * description: Um usuário
+ * /login:
+ *   post:
+ *     summary: Login an existing user
+ *     description: Authenticate an existing user.
+ *     parameters:
+ *       - in: body
+ *         name: login
+ *         description: User credentials
+ *         schema:
+ *           type: object
+ *           required:
+ *             - username
+ *             - password
+ *           properties:
+ *             username:
+ *               type: string
+ *             password:
+ *               type: string
+ *               format: password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Authentication failed
+ *       500:
+ *         description: Internal server error
  */
 router.post('/login', async (req, res) => {
   try {
@@ -55,12 +96,19 @@ router.post('/login', async (req, res) => {
 
 /**
  * @swagger
- * /users/profile:
- * get:
- * description: Retorna o perfil do usuário logado
- * responses:
- * 200:
- * description: Um usuário
+ * /profile:
+ *   get:
+ *     summary: Retrieve the profile of the logged-in user
+ *     description: Retrieve the profile details of the authenticated user.
+ *     security:
+ *       - Bearer: []
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
  */
 router.get('/profile', checkJWT, async (req, res) => {
   try {

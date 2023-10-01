@@ -1,13 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const usersRoutes = require('../routes/users')
-const roomsRoutes = require('../routes/rooms')
-const bookingsRoutes = require('../routes/bookings')
+const usersRoutes = require('./routes/users')
+const roomsRoutes = require('./routes/rooms')
+const bookingsRoutes = require('./routes/bookings')
 
 const cors = require('cors');
 
-
+// Swagger
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -17,15 +17,19 @@ var swaggerDefinition = {
     version: '1.0.0',
     description: 'Sistema de Reserva de Salas'
   },
+  components: {
+    schemas: require('./models/schemas')
+  },
   host: 'localhost:8080',
   basePath: '/',
-
 };
 
 var swaggerOptions = {
-  swaggerDefinition,
-  apis: ['../routes/*.js'],
+  swaggerDefinition: swaggerDefinition,
+  apis: ['./routes/*.js'],
 };
+
+// 
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 

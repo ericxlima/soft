@@ -5,12 +5,15 @@ const verifyAdmin = require('../middlewares/verifyAdmin');
 
 /**
  * @swagger
- * /bookings:
+ * /:
  *   get:
- *     description: Retorna todas as reservas
+ *     summary: Retrieve a list of all bookings
+ *     description: Returns a list of all bookings with their associated room.
  *     responses:
  *       200:
- *         description: Lista de reservas
+ *         description: List of bookings
+ *       500:
+ *         description: Internal server error
  */
 router.get('/', async (req, res) => {
   try {
@@ -29,17 +32,39 @@ router.get('/', async (req, res) => {
 
 /**
  * @swagger
- * /bookings/{id}:
- *  get:
- *   description: Retorna uma reserva pelo id
- *  parameters:
- *  - in: path
- *   name: id
- *  required: true
- * type: integer
- * responses:
- * 200:
- * description: Uma reserva
+ * /:
+ *   post:
+ *     summary: Create a new booking
+ *     description: Add a new booking to the system.
+ *     parameters:
+ *       - in: body
+ *         name: booking
+ *         description: Booking details
+ *         schema:
+ *           type: object
+ *           required:
+ *             - roomId
+ *             - startBooking
+ *             - endBooking
+ *             - userId
+ *           properties:
+ *             roomId:
+ *               type: integer
+ *             startBooking:
+ *               type: string
+ *               format: date-time
+ *             endBooking:
+ *               type: string
+ *               format: date-time
+ *             userId:
+ *               type: integer
+ *     responses:
+ *       201:
+ *         description: Booking created successfully
+ *       400:
+ *         description: Bad request (missing required fields)
+ *       500:
+ *         description: Error creating booking
  */
 router.post('/', async (req, res) => {
   try {
@@ -65,17 +90,20 @@ router.post('/', async (req, res) => {
 
 /**
  * @swagger
- * /bookings/{id}:
- * get:
- * description: Retorna uma reserva pelo id
- * parameters:
- * - in: path
- * name: id
- * required: true
- * type: integer
- * responses:
- * 200:
- * description: Uma reserva
+ * /user/{id}:
+ *   get:
+ *     summary: Retrieve all bookings for a specific user
+ *     description: Returns a list of all bookings made by the specified user.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: List of bookings for the user
+ *       500:
+ *         description: Internal server error
  */
 router.get('/user/:id', async (req, res) => {
   // Seleciona todas as reservas pelo usuário
@@ -94,17 +122,22 @@ router.get('/user/:id', async (req, res) => {
 
 /**
  * @swagger
- * /bookings/{id}:
- * get:
- * description: Retorna uma reserva pelo id
- * parameters:
- * - in: path
- * name: id
- * required: true
- * type: integer
- * responses:
- * 200:
- * description: Uma reserva
+ * /reservas/{id}/aprovar:
+ *   post:
+ *     summary: Approve a booking
+ *     description: Approve a specified booking by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: Booking approved successfully
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Internal server error
  */
 router.post('/reservas/:id/aprovar', verifyAdmin, async (req, res) => {
   try {
@@ -124,17 +157,22 @@ router.post('/reservas/:id/aprovar', verifyAdmin, async (req, res) => {
 
 /**
  * @swagger
- * /bookings/{id}:
- * get:
- * description: Retorna uma reserva pelo id
- * parameters:
- * - in: path
- * name: id
- * required: true
- * type: integer
- * responses:
- * 200:
- * description: Uma reserva
+ * /reservas/{id}/rejeitar:
+ *   post:
+ *     summary: Reject a booking
+ *     description: Reject a specified booking by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: Booking rejected successfully
+ *       404:
+ *         description: Booking not found
+ *       500:
+ *         description: Internal server error
  */
 router.post('/reservas/:id/rejeitar', verifyAdmin, async (req, res) => {
   try {

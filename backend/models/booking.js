@@ -4,22 +4,17 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Booking extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      Booking.associate = function(models) {
-        Booking.belongsTo(models.Room, {
-            foreignKey: 'roomId',
-            onDelete: 'CASCADE'
-        });
-        Booking.belongsTo(models.User, {
-            foreignKey: 'userId',
-            onDelete: 'CASCADE'
-        });
-     };
+      // Remova a função interna "Booking.associate = function(models) {...}"
+      Booking.belongsTo(models.Room, {
+        foreignKey: 'roomId',
+        onDelete: 'CASCADE',
+        as: 'room'
+      });
+      Booking.belongsTo(models.User, {
+        foreignKey: 'userId',
+        onDelete: 'CASCADE'
+      });
     }
   }
   Booking.init({

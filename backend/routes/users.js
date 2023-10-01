@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ where: { username: req.body.username } });
     if (user && await bcrypt.compare(req.body.password, user.password)) {
-      const token = jwt.sign({ sub: user.id }, 'SOFT_SECRET_KEY', { expiresIn: '6h' });
+      const token = jwt.sign({ sub: user.id }, process.env.SOFT_SECRET_KEY, { expiresIn: '6h' });
       res.status(200).json({ token });
     } else {
       res.status(401).send('Authentication failed');

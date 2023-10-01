@@ -3,6 +3,15 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
+// Importando os estilos
+import { 
+  Container, 
+  Title, 
+  StyledInput, 
+  StyledButton, 
+  StyledLink 
+} from './styles';
+
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -24,23 +33,23 @@ function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <Container>
+      <Title>Login</Title>
       {error && <p>{error}</p>}
-      <input
+      <StyledInput
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Usuário"
       />
-      <input
+      <StyledInput
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Senha"
       />
-      <button onClick={handleLogin}>Login</button>
-      <Link to="/register">Não tem uma conta? Registre-se</Link>
-    </div>
+      <StyledButton onClick={handleLogin}>Login</StyledButton>
+      <StyledLink as={Link} to="/register">Não tem uma conta? Registre-se</StyledLink>
+    </Container>
   );
 }
 

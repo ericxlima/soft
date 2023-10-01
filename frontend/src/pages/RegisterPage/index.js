@@ -1,9 +1,21 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
+// Importando os estilos
+import { 
+  Container, 
+  Title, 
+  StyledInput, 
+  StyledButton, 
+  StyledLink, 
+  CheckboxWrapper,
+  StyledCheckbox,
+  StyledLabel
+} from './styles';
 
 function RegisterPage() {
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [is_admin, setIsAdmin] = useState(false);
@@ -20,30 +32,33 @@ function RegisterPage() {
   };
 
   return (
-    <div>
-      <h1>Registrar</h1>
+    <Container>
+      <Title>Registrar</Title>
       {error && <p>{error}</p>}
-      <input
+      <StyledInput
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Usuário"
       />
-      <input
+      <StyledInput
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Senha"
       />
-      <input
-        type="checkbox"
-        checked={is_admin}
-        onChange={(e) => setIsAdmin(e.target.checked)}
-      />
-      <label>Sou Administrador</label>
-      <button onClick={handleRegister}>Registrar</button>
-      <Link to="/login">Já tem uma conta? Faça login</Link>
-    </div>
+      <CheckboxWrapper>
+        <StyledCheckbox
+          type="checkbox"
+          checked={is_admin}
+          onChange={(e) => setIsAdmin(e.target.checked)}
+        />
+        <StyledLabel>Sou Administrador</StyledLabel>
+      </CheckboxWrapper>
+      <StyledButton onClick={handleRegister}>Registrar</StyledButton>
+      <StyledLink as={Link} to="/login">Já tem uma conta? Faça login</StyledLink>
+    </Container>
   );
 }
 
 export default RegisterPage;
+

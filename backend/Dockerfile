@@ -6,6 +6,8 @@ COPY package*.json ./
 
 RUN npm install
 
+RUN npx sequelize-cli db:migrate
+
 COPY . .
 
 EXPOSE 8080

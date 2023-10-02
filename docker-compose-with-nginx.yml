@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  nginx: 
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/nginx/development:/etc/nginx/conf.d  
+    depends_on:
+      - backend
+
+  backend:
+    restart: always
+    build:
+        context: .
+        dockerfile: ./docker/server/Dockerfile
+    expose:
+      - 8080
+    environment:
+      - NODE_ENV=test
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      - LC_ALL=C.UTF-8
+      - POSTGRES_DB=database_test
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

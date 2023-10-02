@@ -15,6 +15,9 @@ O nome "SOFT" surge para representar a eficiência e agilidade na criação dest
 ```
 # instalar e configurar o docker em máquina local 
 docker compose up --build -d
+
+# Testar versão com servidor Nginx
+docker compose -f docker-compose-with-nginx.yml up --build -d
 ```
 
 - Sem Docker (Manualmente)
@@ -54,16 +57,10 @@ Para garantir que utilizo boas práticas, busquei:
 - Arquitetura e organização de pastas popular
 - Uitilização de Migrações de Banco de Dados via Sequelize
 - Utilização de Variáveis de ambiente
-- Documentação de API via Swagger [http://0.0.0.0:8080/api-docs](http://0.0.0.0:8080/api-docs)
+- Documentação de API via Swagger [http://0.0.0.0:8080/api/docs](http://0.0.0.0:8080/api/docs)
 - RESTFul Patterns
 - Styled Components
-- Algumas boas práticas de UI 
-
-
-# to do (tech):
-    - [ ] Change sqlite to other db
-    - [ ] Change SOFT_SECRET_KEY jwt in users.js to env file
-    - [ ] Implementar middleware para checar se é de fato um adm que está requisitando (via back invés de limitar apenas no front)
+- Algumas boas práticas de UI
 
 Requisitos:
 
@@ -79,4 +76,7 @@ Requisitos:
 
 Observação: Possuo experiência com TDD mas em Python com Pytest e Selenium, daí resolvi desenvolver parte da Infra no lugar.
 
+## Infra
+
+![infra](infra.png)
 

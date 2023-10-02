@@ -6,6 +6,8 @@ A solução foi desenvolvida utilizando o framework Express no back-end e React 
 
 O nome "SOFT" surge para representar a eficiência e agilidade na criação desta solução.
 
+Vídeo de demonstração: [https://youtu.be/QRiVZ7Ytc88](https://youtu.be/QRiVZ7Ytc88)
+
 ![screenshot](screenshot.png)
 
 ## Como rodar:
@@ -27,6 +29,7 @@ docker compose -f docker-compose-with-nginx.yml up --build -d
 # Terminal 1
 cd backend
 npm i
+npx sequelize-cli db:migrate # para realizar as migrações
 node src/server.js
 
 # Terminal 2

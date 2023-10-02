@@ -8,7 +8,7 @@ RUN npm install
 
 RUN npm install pg pg-hstore
 
-RUN npx sequelize-cli db:migrate
+# RUN npx sequelize-cli db:migrate
 
 COPY . .
 

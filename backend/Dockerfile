@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npx sequelize-cli db:migrate
+# RUN npx sequelize-cli db:migrate
 
 COPY . .
 

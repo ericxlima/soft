@@ -75,22 +75,12 @@ function RoomsAdmin() {
             <option value="REJECTED">REJECTED</option>
           </select>
         )
-      },
-      {
-        Header: 'Ação',
-        accessor: 'apply',
-        Cell: ({ row }) => (
-          <button onClick={() => handleApplyClick(row.original.id)}>
-            Aplicar
-          </button>
-        )
       }
     ],
     []
   );
 
   let allTransformedData = useMemo(() => {
-    console.log(allBookings)
     return allBookings.map(booking => {
       const room = rooms.find(r => r.id === booking.roomId);
       return { ...booking, roomName: room ? room.name : 'Sala não encontrada' };
@@ -221,16 +211,6 @@ function RoomsAdmin() {
         console.error("Erro ao atualizar status da reserva:", error);
     }
 };
-
-
-  const handleApplyClick = (bookingId) => {
-    console.log(`Apply changes for Booking ID: ${bookingId}`);
-  };
-
-  useEffect(() => {
-    console.log("allBookings changed:", allBookings);
-  }, [allBookings]);
-  
 
   return (
     <Container>

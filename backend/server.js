@@ -7,6 +7,9 @@ const bookingsRoutes = require('./routes/bookings')
 
 const cors = require('cors');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 // Swagger
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -36,7 +39,17 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 const app = express();
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200
+}
+
 app.use(cors());
+// app.use(cors({
+//   origin: '*',
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,7 +57,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/v1/auth', usersRoutes);
 app.use('/api/v1/rooms', roomsRoutes);
 app.use('/api/v1/bookings', bookingsRoutes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get('/', (req, res) => {
   res.json({ message: "Welcome to the backend!" });
